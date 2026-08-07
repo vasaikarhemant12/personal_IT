@@ -1,0 +1,27 @@
+from pyspark.sql import SparkSession
+
+def test_clean_customer_data():
+    spark = SparkSession.builder.master("local[2]").getOrCreate()
+
+    input_data = [
+        (1, "John", 25),
+        (2, "David", 15),
+        (None, "Sam", 30)
+    ]
+
+    df = spark.createDataFrame(
+        input_data,
+        ["customer_id", "name", "age"]
+    )
+
+    result = clean_customer_data(df)
+
+    assert result.count() == 1
+
+    row = result.collect()[0]
+
+    assert row["customer_id"] == 1
+    assert row["name"] == "John"
+    assert row["age"] == 25
+
+    spark.stop()
